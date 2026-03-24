@@ -16,7 +16,7 @@ def main():
   machine = common.machine()
   target = common.target()
   classifier = common.classifier()
-  backends_label = "-".join(common.skia_gpu_backends())
+  backends_label = common.skia_gpu_backends()
 
   zip_name = f'Skia-{version}-{target}-{build_type}-{machine}-{backends_label}{classifier}.zip'
   zip_path = common.skia_dir() / zip_name

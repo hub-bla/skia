@@ -62,7 +62,7 @@ def prepare_skia_checkout(skia_dir):
     patch_windows_toolchain(skia_dir)
 
 
-def parse_skia_backend(enabled_backends: list[str]):
+def parse_skia_backend(enabled_backends: str):
   backend_to_flag_mapping = {
       "Ganesh": "skia_use_ganesh",
       "Graphite": "skia_use_graphite",

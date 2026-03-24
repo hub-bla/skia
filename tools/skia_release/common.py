@@ -42,7 +42,7 @@ def skia_gpu_backends():
   parser = create_parser()
   (args, _) = parser.parse_known_args()
 
-  return args.skia_gpu_backends.split("-")
+  return args.skia_gpu_backends
 
 
 def host():

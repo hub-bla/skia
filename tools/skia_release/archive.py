@@ -30,7 +30,7 @@ def main():
       build_type,
       target,
       machine,
-      *skia_gpu_backends
+      skia_gpu_backends
   ])
   out_bin = 'out/' + out_bin_name
 
