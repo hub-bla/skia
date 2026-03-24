@@ -8,7 +8,8 @@ import time
 
 import common
 
-
+# TODO: flags like skia_use_direct3d even being set to true wont enable this unless ganesh is enabled so we're good there
+# https://github.com/google/skia/blob/62841a512deb64698ed37d32714c590034ede0b7/gn/skia.gni#L190-L195
 def git_sync_with_retries(skia_dir, max_retries=3, backoff_seconds=5):
   attempt = 0
   while True:
@@ -61,6 +62,15 @@ def prepare_skia_checkout(skia_dir):
     patch_windows_toolchain(skia_dir)
 
 
+def parse_skia_backend(enabled_backends: list[str]):
+  backend_to_flag_mapping = {
+      "Ganesh": "skia_use_ganesh",
+      "Graphite": "skia_use_graphite",
+  }
+  return [flag + "=true" if backend in enabled_backends else flag + "=false"
+                     for backend, flag in backend_to_flag_mapping.items()]
+
+
 def ninja_path(host):
   return os.path.join('third_party', 'ninja', 'ninja.exe' if host == 'windows' else 'ninja')
 
@@ -75,6 +85,7 @@ def main():
   host = common.host()
   target = common.target()
   ndk = common.ndk()
+  skia_gpu_backends = common.skia_gpu_backends()
 
   ninja = ninja_path(host)
   is_ios = target in ('ios', 'iosSim')
@@ -88,6 +99,7 @@ def main():
   else:
     args = ['is_official_build=true']
 
+  args += parse_skia_backend(skia_gpu_backends)
   args += [
       'target_cpu="' + machine + '"',
       'skia_use_system_expat=false',
@@ -185,7 +197,6 @@ def main():
         'skia_use_webgl=true',
         'skia_gl_standard="webgl"',
         'skia_use_gl=true',
-        'skia_enable_gpu=true',
         'skia_enable_svg=true',
         'skia_use_expat=true',
         'extra_cflags+=["-DSK_SUPPORT_GPU=1", "-DSK_GL", "-DSK_DISABLE_LEGACY_SHADERCONTEXT", "-sSUPPORT_LONGJMP=wasm"]',

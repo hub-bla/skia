@@ -16,8 +16,9 @@ def main():
   machine = common.machine()
   target = common.target()
   classifier = common.classifier()
+  backends_label = "-".join(common.skia_gpu_backends())
 
-  zip_name = 'Skia-' + version + '-' + target + '-' + build_type + '-' + machine + classifier + '.zip'
+  zip_name = f'Skia-{version}-{target}-{build_type}-{machine}-{backends_label}{classifier}.zip'
   zip_path = common.skia_dir() / zip_name
   if not zip_path.exists():
     print('Can\'t find "' + zip_name + '"')

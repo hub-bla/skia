@@ -24,7 +24,15 @@ def main():
   machine = common.machine()
   target = common.target()
   classifier = common.classifier()
-  out_bin = 'out/' + build_type + '-' + target + '-' + machine
+  skia_gpu_backends = common.skia_gpu_backends()
+
+  out_bin_name = "-".join([
+      build_type,
+      target,
+      machine,
+      *skia_gpu_backends
+  ])
+  out_bin = 'out/' + out_bin_name
 
   globs = [
       out_bin + '/*.a',
@@ -81,7 +89,14 @@ def main():
       'third_party/icu/*.h',
   ]
 
-  dist = 'Skia-' + version + '-' + target + '-' + build_type + '-' + machine + classifier + '.zip'
+  artifact_name = "-".join([
+      version,
+      target,
+      build_type,
+      machine,
+      *skia_gpu_backends
+  ])
+  dist = 'Skia-' + artifact_name + classifier + '.zip'
   print('> Writing', dist)
 
   with zipfile.ZipFile(skia_dir / dist, 'w', compression=zipfile.ZIP_DEFLATED) as zip_file:
