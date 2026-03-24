@@ -10,17 +10,18 @@ from pathlib import Path
 
 
 def create_parser(version_required=False):
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--build-type', default='Release', choices=['Debug', 'Release'])
-  parser.add_argument('--skia-gpu-backends', default='Ganesh', choices=['Ganesh', 'Graphite', "Ganesh-Graphite"])
-  parser.add_argument('--version', required=version_required)
-  parser.add_argument('--classifier')
-  parser.add_argument('--host')
-  parser.add_argument('--machine')
-  parser.add_argument('--ndk')
-  parser.add_argument('--skia-dir')
-  parser.add_argument('--target')
-  return parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--build-type', default='Release', choices=['Debug', 'Release'])
+    parser.add_argument('--skia-gpu-backends', default='Ganesh', type=lambda value: value.strip('"\''),
+                        choices=['Ganesh', 'Graphite', "Ganesh-Graphite"])
+    parser.add_argument('--version', required=version_required)
+    parser.add_argument('--classifier')
+    parser.add_argument('--host')
+    parser.add_argument('--machine')
+    parser.add_argument('--ndk')
+    parser.add_argument('--skia-dir')
+    parser.add_argument('--target')
+    return parser
 
 
 def repo_root():
