@@ -12,7 +12,7 @@ from pathlib import Path
 def create_parser(version_required=False):
   parser = argparse.ArgumentParser()
   parser.add_argument('--build-type', default='Release', choices=['Debug', 'Release'])
-  parser.add_argument('--skia-gpu-backends', default=['Ganesh'], nargs='+', choices=['Ganesh', 'Graphite'])
+  parser.add_argument('--skia-gpu-backends', default='Ganesh', choices=['Ganesh', 'Graphite', "Ganesh-Graphite"])
   parser.add_argument('--version', required=version_required)
   parser.add_argument('--classifier')
   parser.add_argument('--host')
@@ -42,7 +42,7 @@ def skia_gpu_backends():
   parser = create_parser()
   (args, _) = parser.parse_known_args()
 
-  return args.skia_gpu_backends
+  return args.skia_gpu_backends.split("-")
 
 
 def host():

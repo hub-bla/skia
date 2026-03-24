@@ -42,7 +42,7 @@ jobs:
         target: ["macos", "ios", "iosSim", "tvos", "tvosSim"]
         machine: ["x64", "arm64"]
         build_type: [Release, Debug]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh Graphite"]
+        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
         exclude:
           - target: tvos
             machine: x64
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
-          name: Skia-${{ needs.prepare.outputs.version }}-${{ matrix.target }}-${{ matrix.build_type }}-${{ matrix.machine }}-${{ replace(matrix.skia_gpu_backend, ' ', '-') }}.zip
+          name: Skia-${{ needs.prepare.outputs.version }}-${{ matrix.target }}-${{ matrix.build_type }}-${{ matrix.machine }}-${{ matrix.skia_gpu_backend }}.zip
           path: '*.zip'
       - run: python3 tools/skia_release/release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --build-type ${{ matrix.build_type }} --target ${{ matrix.target }} --machine ${{ matrix.machine }} --skia-gpu-backends ${{ matrix.skia_gpu_backend }}
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
@@ -76,7 +76,7 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh Graphite"]
+        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
-          name: Skia-${{ needs.prepare.outputs.version }}-linux-${{ matrix.build_type }}-x64-${{ replace(matrix.skia_gpu_backend, ' ', '-') }}.zip
+          name: Skia-${{ needs.prepare.outputs.version }}-linux-${{ matrix.build_type }}-x64-${{ matrix.skia_gpu_backend }}.zip
           path: '*.zip'
       - run: python3 tools/skia_release/release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --build-type ${{ matrix.build_type }} --skia-gpu-backends ${{ matrix.skia_gpu_backend }}
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
@@ -106,10 +106,10 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh Graphite"]
+        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
         exclude:
           - skia_gpu_backend: "Graphite"
-          - skia_gpu_backend: "Ganesh Graphite"
+          - skia_gpu_backend: "Ganesh-Graphite"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
-          name: Skia-${{ needs.prepare.outputs.version }}-wasm-${{ matrix.build_type }}-wasm-${{ replace(matrix.skia_gpu_backend, ' ', '-') }}.zip
+          name: Skia-${{ needs.prepare.outputs.version }}-wasm-${{ matrix.build_type }}-wasm-${{ matrix.skia_gpu_backend }}.zip
           path: '*.zip'
       - run: python3 tools/skia_release/release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --target wasm --machine wasm --build-type ${{ matrix.build_type }} --skia-gpu-backends ${{ matrix.skia_gpu_backend }}
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
@@ -140,7 +140,7 @@ jobs:
       matrix:
         build_type: [Debug, Release]
         machine: ["x64", "arm64"]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh Graphite"]
+        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -159,7 +159,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
-          name: Skia-${{ needs.prepare.outputs.version }}-android-${{ matrix.build_type }}-${{ matrix.machine }}-${{ replace(matrix.skia_gpu_backend, ' ', '-') }}.zip
+          name: Skia-${{ needs.prepare.outputs.version }}-android-${{ matrix.build_type }}-${{ matrix.machine }}-${{ matrix.skia_gpu_backend }}.zip
           path: '*.zip'
       - run: python3 tools/skia_release/release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --target android --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }} --skia-gpu-backends ${{ matrix.skia_gpu_backend }}
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
@@ -173,7 +173,7 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh Graphite"]
+        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -192,12 +192,12 @@ jobs:
             set -euo pipefail
             cd /workspace
             /bin/bash tools/skia_release/prepare_linux_arm.sh
-            python3 tools/skia_release/build.py --skia-dir "${SKIA_BUILD_DIR}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends ${SKIA_BACKENDS}
-            python3 tools/skia_release/archive.py --skia-dir "${SKIA_BUILD_DIR}" --version "${BUILD_VERSION}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends ${SKIA_BACKENDS}
+            python3 tools/skia_release/build.py --skia-dir "${SKIA_BUILD_DIR}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends "${SKIA_BACKENDS}"
+            python3 tools/skia_release/archive.py --skia-dir "${SKIA_BUILD_DIR}" --version "${BUILD_VERSION}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends "${SKIA_BACKENDS}"
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
-          name: Skia-${{ needs.prepare.outputs.version }}-linux-${{ matrix.build_type }}-arm64-${{ replace(matrix.skia_gpu_backend, ' ', '-') }}.zip
+          name: Skia-${{ needs.prepare.outputs.version }}-linux-${{ matrix.build_type }}-arm64-${{ matrix.skia_gpu_backend }}.zip
           path: '*.zip'
       - run: python3 tools/skia_release/release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --build-type ${{ matrix.build_type }} --target linux --machine arm64 --skia-gpu-backends ${{ matrix.skia_gpu_backend }}
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
@@ -212,7 +212,7 @@ jobs:
       matrix:
         build_type: [Debug, Release]
         machine: ["x64", "arm64"]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh Graphite"]
+        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
     steps:
       - run: git config --global core.autocrlf input
       - uses: actions/checkout@v4
@@ -235,7 +235,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
-          name: Skia-${{ needs.prepare.outputs.version }}-windows-${{ matrix.build_type }}-${{ matrix.machine }}-${{ replace(matrix.skia_gpu_backend, ' ', '-') }}.zip
+          name: Skia-${{ needs.prepare.outputs.version }}-windows-${{ matrix.build_type }}-${{ matrix.machine }}-${{ matrix.skia_gpu_backend }}.zip
           path: '*.zip'
       - shell: bash
         run: python3 tools/skia_release/release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --build-type ${{ matrix.build_type }} --target windows --machine ${{ matrix.machine }} --skia-gpu-backends ${{ matrix.skia_gpu_backend }}
