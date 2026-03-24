@@ -94,7 +94,7 @@ def main():
       target,
       build_type,
       machine,
-      *skia_gpu_backends
+      skia_gpu_backends
   ])
   dist = 'Skia-' + artifact_name + classifier + '.zip'
   print('> Writing', dist)
