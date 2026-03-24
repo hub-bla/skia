@@ -173,7 +173,7 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        skia_gpu_backend: ["Ganesh", "Graphite", "Ganesh-Graphite"]
+        skia_gpu_backend: [Ganesh, Graphite, Ganesh-Graphite]
     steps:
       - uses: actions/checkout@v4
         with:
