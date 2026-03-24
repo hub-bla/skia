@@ -192,8 +192,8 @@ jobs:
             set -euo pipefail
             cd /workspace
             /bin/bash tools/skia_release/prepare_linux_arm.sh
-            python3 tools/skia_release/build.py --skia-dir "${SKIA_BUILD_DIR}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends "${SKIA_BACKENDS}"
-            python3 tools/skia_release/archive.py --skia-dir "${SKIA_BUILD_DIR}" --version "${BUILD_VERSION}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends "${SKIA_BACKENDS}"
+            python3 tools/skia_release/build.py --skia-dir "${SKIA_BUILD_DIR}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends ${SKIA_BACKENDS}
+            python3 tools/skia_release/archive.py --skia-dir "${SKIA_BUILD_DIR}" --version "${BUILD_VERSION}" --build-type "${BUILD_TYPE}" --target linux --machine arm64 --skia-gpu-backends ${SKIA_BACKENDS}
       - uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         with:
