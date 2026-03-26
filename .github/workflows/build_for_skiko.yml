@@ -83,7 +83,7 @@ jobs:
       - uses: lukka/get-cmake@latest
         with:
           cmakeVersion: "~3.30.0"
-          ninjaVersion: "^1.11.1"
+          ninjaVersion: "^1.12.1"
       - run: python3 tools/skia_release/check_release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --build-type ${{ matrix.build_type }}
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         env:
@@ -116,7 +116,7 @@ jobs:
       - uses: lukka/get-cmake@latest
         with:
           cmakeVersion: "~3.30.0"
-          ninjaVersion: "^1.11.1"
+          ninjaVersion: "^1.12.1"
       - run: python3 tools/skia_release/check_release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --target wasm --build-type ${{ matrix.build_type }} --machine wasm
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         env:
