@@ -176,6 +176,8 @@ def main():
   elif target == 'android':
     args += ['ndk="' + ndk + '"']
   elif target == 'wasm':
+    if enable_dawn:
+        args += ['skia_use_webgpu=true']
     args += [
         'skia_use_dng_sdk=false',
         'skia_use_libjpeg_turbo_decode=true',
