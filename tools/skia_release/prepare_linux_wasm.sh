@@ -8,6 +8,10 @@ apt-get install binutils build-essential -y
 apt-get install software-properties-common -y
 apt-get install git unzip curl wget pkg-config -y
 
+apt-get install gcc-12 g++-12 -y
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 60 --slave /usr/bin/g++ g++ /usr/bin/g++-12
+update-alternatives --set gcc /usr/bin/gcc-12
+
 apt-get install python3.9 -y
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 100
 
