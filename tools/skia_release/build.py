@@ -140,7 +140,7 @@ def main():
       args += ['extra_cflags+=["-stdlib=libc++", "-mmacosx-version-min=10.13"]']
   elif target == 'linux':
     if enable_dawn:
-      args += ['dawn_enable_vulkan=true']
+      args += ['dawn_enable_vulkan=true', 'dawn_use_x11=true']
     if machine == 'arm64':
       args += [
           'skia_gl_standard="gles"',
