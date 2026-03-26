@@ -20,6 +20,5 @@ apt-get install unzip cmake ninja-build fontconfig libfontconfig1-dev libglu1-me
 apt-get install python3.9 -y
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 100
 
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python3 get-pip.py
+apt-get install -y python3-pip
 pip3 install "cmake==3.30.*"
