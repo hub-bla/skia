@@ -208,7 +208,7 @@ def main():
 
   args += [
       'extra_cflags+=["-USK_HIDE_PATH_EDIT_METHODS"]',
-      'extra_cflags_cc+=["-USK_HIDE_PATH_EDIT_METHODS"]',
+      'extra_cflags_cc+=["-USK_HIDE_PATH_EDIT_METHODS", "-std=c++20"]',
   ]
 
   if gpu_as_extension:
@@ -218,7 +218,7 @@ def main():
   if enable_graphite:
     args += ['skia_enable_graphite=true']
   if enable_dawn:
-      args += ['skia_use_dawn=true']
+    args += ['skia_use_dawn=true']
 
   out = os.path.join('out', build_type + '-' + target + '-' + machine)
   gn = 'gn.exe' if host == 'windows' else 'gn'
