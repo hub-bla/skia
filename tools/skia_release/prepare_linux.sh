@@ -15,10 +15,10 @@ update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /usr/b
 update-alternatives --set gcc /usr/bin/gcc-11
 
 apt-get install git wget -y
-apt-get install unzip cmake ninja-build fontconfig libfontconfig1-dev libglu1-mesa-dev curl zip pkg-config -y
+apt-get install unzip fontconfig libfontconfig1-dev libglu1-mesa-dev curl zip pkg-config -y
 
 apt-get install python3.9 -y
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 100
 
 apt-get install -y python3-pip
-pip3 install "cmake==3.30.*"
+pip3 install "cmake==3.30.*" "ninja>=1.11.1"
