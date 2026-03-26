@@ -8,7 +8,7 @@ apt-get install binutils build-essential software-properties-common -y
 add-apt-repository ppa:git-core/ppa -y
 add-apt-repository ppa:ubuntu-toolchain-r/test -y
 apt-get update -y
-apt-get install git ninja-build fontconfig libfontconfig1-dev libglu1-mesa-dev curl wget -y
+apt-get install git unzip ninja-build fontconfig libfontconfig1-dev libglu1-mesa-dev curl wget -y
 
 apt-get install gcc-10 g++-10 -y
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 60 --slave /usr/bin/g++ g++ /usr/bin/g++-10
