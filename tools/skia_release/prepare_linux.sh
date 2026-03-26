@@ -10,9 +10,9 @@ apt-get update -y
 apt-get install build-essential software-properties-common -y
 apt-get update
 
-apt-get install gcc-11 g++-11 -y
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /usr/bin/g++ g++ /usr/bin/g++-11
-update-alternatives --set gcc /usr/bin/gcc-11
+apt-get install gcc-12 g++-12 -y
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 60 --slave /usr/bin/g++ g++ /usr/bin/g++-12
+update-alternatives --set gcc /usr/bin/gcc-12
 
 apt-get install git wget -y
 apt-get install unzip fontconfig libfontconfig1-dev libglu1-mesa-dev curl zip pkg-config -y
