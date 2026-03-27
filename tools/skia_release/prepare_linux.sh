@@ -7,7 +7,7 @@ apt-get update -y
 apt-get install build-essential software-properties-common -y
 add-apt-repository ppa:ubuntu-toolchain-r/test -y
 apt-get update -y
-apt-get install build-essential software-properties-common -y
+apt-get install build-essential software-properties-common libx11-dev libxcb1-dev -y
 apt-get update
 
 apt-get install gcc-12 g++-12 -y

@@ -8,7 +8,7 @@ apt-get install binutils build-essential software-properties-common -y
 add-apt-repository ppa:git-core/ppa -y
 add-apt-repository ppa:ubuntu-toolchain-r/test -y
 apt-get update -y
-apt-get install git unzip fontconfig libfontconfig1-dev libglu1-mesa-dev curl wget pkg-config -y
+apt-get install git unzip fontconfig libfontconfig1-dev libglu1-mesa-dev curl wget pkg-config libx11-dev libxcb1-dev -y
 
 apt-get install gcc-12 g++-12 -y
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 60 --slave /usr/bin/g++ g++ /usr/bin/g++-12
