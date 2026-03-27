@@ -154,10 +154,7 @@ def main():
     configure_cmd.append(f"-DANDROID_ABI={target_cpu}")
     configure_cmd.append(f"-DANDROID_PLATFORM={args.android_platform}")
   elif is_wasm:
-    emsdk_env_path = os.environ.get("EMSDK")
-    if not emsdk_env_path:
-      print("Error: EMSDK environment variable is not set.")
-      sys.exit(1)
+    emsdk_env_path = os.path.abspath(os.path.join(script_dir, "..", "externals", "emsdk"))
     toolchain_path = os.path.join(emsdk_env_path, "upstream", "emscripten", "cmake", "Modules", "Platform", "Emscripten.cmake")
     configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={toolchain_path}")
     configure_cmd.append("-DEMSCRIPTEN=ON")
