@@ -187,7 +187,7 @@ DawnBuffer::DawnBuffer(const DawnSharedContext* sharedContext,
                  // prepareForReturnToCache only needs to be called for a buffer that is mappable
                  // for writing
                  /* requiresPrepareForReturnToCache= */
-                                                   fBuffer.GetUsage() & wgpu::BufferUsage::MapWrite
+                                                   buffer.GetUsage() & wgpu::BufferUsage::MapWrite)
 #else
                  /* requiresPrepareForReturnToCache= */ false)
 #endif

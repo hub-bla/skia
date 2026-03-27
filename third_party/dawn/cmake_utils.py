@@ -361,6 +361,8 @@ def combine_into_library(args, output_path, build_dir, target_os, object_files):
     combine_obj_cmd = [
         linker_exe, "/LIB", f"/OUT:{lib_name}", f"@{response_file_name}"
     ]
+  elif target_os == "wasm":
+    combine_obj_cmd = ["emar", "rcs", lib_name] + object_files
   else:
     combine_obj_cmd = ["ar", "rcs", lib_name] + object_files
   subprocess.run(combine_obj_cmd, cwd=build_dir, check=True)

@@ -68,15 +68,19 @@ def main():
 
   target_os, target_cpu = get_cmake_os_cpu(args.target_os, args.target_cpu)
 
+  is_wasm = (args.target_os == "wasm" and target_os == "wasm")
+
   output_path = args.output_path
   gen_dir = args.gen_dir
-  # The headers are a dependency for all libraries.
-  # We want to build the other listed dawn components into one big library.
-  build_targets = ["webgpu_headers_gen", "dawn_proc", "dawn_native"]
+
+  if target_os == "wasm" or target_cpu == "wasm":
+    build_targets = ["emdawnwebgpu_headers_gen", "emdawnwebgpu_c", "emdawnwebgpu_cpp"]
+  else:
+    build_targets = ["webgpu_headers_gen", "dawn_proc", "dawn_native"]
+
   depfile_path = args.depfile_path
 
   script_dir = os.path.dirname(os.path.realpath(__file__))
-
   dawn_dir = os.path.join(script_dir, "..", "externals", "dawn")
   build_dir = args.build_dir
 
@@ -124,12 +128,12 @@ def main():
     configure_cmd += win_cfgs
     cxx_flags += win_cxx
     ld_flags += win_ld
-
-    # The D3D backend requires the HLSL writer.
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=ON")
   else:
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=OFF")
     cxx_flags.append("-w") # Silence warnings
+    if is_wasm:
+      cxx_flags.append("--closure=1")
 
   if cxx_flags:
     c_cxx_flags_str = " ".join(cxx_flags)
@@ -149,6 +153,16 @@ def main():
     configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={args.android_ndk_path}/build/cmake/android.toolchain.cmake")
     configure_cmd.append(f"-DANDROID_ABI={target_cpu}")
     configure_cmd.append(f"-DANDROID_PLATFORM={args.android_platform}")
+  elif is_wasm:
+    emsdk_env_path = os.environ.get("EMSDK")
+    if not emsdk_env_path:
+      print("Error: EMSDK environment variable is not set.")
+      sys.exit(1)
+    toolchain_path = os.path.join(emsdk_env_path, "upstream", "emscripten", "cmake", "Modules", "Platform", "Emscripten.cmake")
+    configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={toolchain_path}")
+    configure_cmd.append("-DEMSCRIPTEN=ON")
+    emdawnwebgpu_dir = os.path.join(dawn_dir, "third_party", "emdawnwebgpu")
+    configure_cmd.append(f"-DDAWN_EMDAWNWEBGPU_DIR={emdawnwebgpu_dir}")
   else:
     configure_cmd.append(f"-DCMAKE_C_COMPILER={args.cc.replace(os.sep, '/')}")
     configure_cmd.append(f"-DCMAKE_CXX_COMPILER={args.cxx.replace(os.sep, '/')}")
@@ -182,15 +196,24 @@ def main():
   if os.path.exists(generated_headers_dest):
     shutil.rmtree(generated_headers_dest)
 
-  # Copy the contents of the 'dawn' and 'webgpu' directories into the destination.
-  shutil.copytree(
-      os.path.join(generated_headers_src, "dawn"),
-      os.path.join(generated_headers_dest, "dawn"),
-      dirs_exist_ok=True)
-  shutil.copytree(
-      os.path.join(generated_headers_src, "webgpu"),
-      os.path.join(generated_headers_dest, "webgpu"),
-      dirs_exist_ok=True)
+  os.makedirs(generated_headers_dest, exist_ok=True)
+
+  standard_dawn_src = os.path.join(generated_headers_src, "dawn")
+  if os.path.exists(standard_dawn_src):
+    shutil.copytree(standard_dawn_src, os.path.join(generated_headers_dest, "dawn"), dirs_exist_ok=True)
+
+  if not is_wasm:
+    shutil.copytree(
+        os.path.join(generated_headers_src, "webgpu"),
+        os.path.join(generated_headers_dest, "webgpu"),
+        dirs_exist_ok=True)
+  else:
+    wasm_webgpu_src = os.path.join(build_dir, "gen", "src", "emdawnwebgpu", "include", "webgpu")
+    if os.path.exists(wasm_webgpu_src):
+        shutil.copytree(
+            wasm_webgpu_src,
+            os.path.join(generated_headers_dest, "webgpu"),
+            dirs_exist_ok=True)
 
   dependencies, object_files = discover_dependencies(build_dir, build_targets)
   write_depfile(output_path, depfile_path, dependencies)
