@@ -204,11 +204,12 @@ def main():
         'skia_enable_svg=true',
         'skia_use_expat=true',
         f'extra_cflags+=["-DSK_SUPPORT_GPU=1", "-DSK_GL", "-DSK_DISABLE_LEGACY_SHADERCONTEXT", "-sSUPPORT_LONGJMP=wasm"]',
+        'extra_cflags_cc+=["-std=c++20"]',
     ]
 
   args += [
       'extra_cflags+=["-USK_HIDE_PATH_EDIT_METHODS"]',
-      'extra_cflags_cc+=["-USK_HIDE_PATH_EDIT_METHODS", "-std=c++20"]',
+      'extra_cflags_cc+=["-USK_HIDE_PATH_EDIT_METHODS"]',
   ]
 
   if gpu_as_extension:
@@ -223,7 +224,6 @@ def main():
   out = os.path.join('out', build_type + '-' + target + '-' + machine)
   gn = 'gn.exe' if host == 'windows' else 'gn'
   gn_cmd = [os.path.join('bin', gn), 'gen', out, '--args=' + ' '.join(args)]
-  print(gn_cmd)
   subprocess.check_call(gn_cmd)
   ninja_targets = ['skia', 'modules']
 
@@ -231,6 +231,7 @@ def main():
     if enable_ganesh:
       ninja_targets.append('skia_ganesh_ext')
     if enable_graphite:
+      # and target not in ["linux", "wasm", "windows"]):
       ninja_targets.append('skia_graphite_ext')
     if enable_dawn:
       ninja_targets.append('skia_graphite_dawn_ext')
