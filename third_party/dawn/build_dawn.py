@@ -152,13 +152,6 @@ def main():
     configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={args.android_ndk_path}/build/cmake/android.toolchain.cmake")
     configure_cmd.append(f"-DANDROID_ABI={target_cpu}")
     configure_cmd.append(f"-DANDROID_PLATFORM={args.android_platform}")
-  elif is_wasm:
-    emsdk_env_path = os.path.abspath(os.path.join(script_dir, "..", "externals", "emsdk"))
-    toolchain_path = os.path.join(emsdk_env_path, "upstream", "emscripten", "cmake", "Modules", "Platform", "Emscripten.cmake")
-    configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={toolchain_path}")
-    configure_cmd.append("-DEMSCRIPTEN=ON")
-    emdawnwebgpu_dir = os.path.join(dawn_dir, "third_party", "emdawnwebgpu")
-    configure_cmd.append(f"-DDAWN_EMDAWNWEBGPU_DIR={emdawnwebgpu_dir}")
   else:
     configure_cmd.append(f"-DCMAKE_C_COMPILER={args.cc.replace(os.sep, '/')}")
     configure_cmd.append(f"-DCMAKE_CXX_COMPILER={args.cxx.replace(os.sep, '/')}")
