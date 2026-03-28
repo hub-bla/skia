@@ -203,7 +203,7 @@ def main():
         'skia_use_gl=true',
         'skia_enable_svg=true',
         'skia_use_expat=true',
-        f'extra_cflags+=["-DSK_SUPPORT_GPU=1", "-DSK_GL", "-DSK_DISABLE_LEGACY_SHADERCONTEXT", "-sSUPPORT_LONGJMP=wasm", "--use-port={os.path.dirname(os.path.realpath(__file__))}/third_party/externals/dawn/src/emdawnwebgpu/pkg/emdawnwebgpu.port.py"]',
+        f'extra_cflags+=["-DSK_SUPPORT_GPU=1", "-DSK_GL", "-DSK_DISABLE_LEGACY_SHADERCONTEXT", "-sSUPPORT_LONGJMP=wasm"]',
     ]
 
   args += [
