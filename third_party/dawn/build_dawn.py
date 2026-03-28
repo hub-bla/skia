@@ -68,19 +68,15 @@ def main():
 
   target_os, target_cpu = get_cmake_os_cpu(args.target_os, args.target_cpu)
 
-  is_wasm = (args.target_os == "wasm" and target_os == "wasm")
-
   output_path = args.output_path
   gen_dir = args.gen_dir
-
-  if target_os == "wasm" or target_cpu == "wasm":
-    build_targets = ["emdawnwebgpu_headers_gen", "emdawnwebgpu_c", "emdawnwebgpu_cpp"]
-  else:
-    build_targets = ["webgpu_headers_gen", "dawn_proc", "dawn_native"]
-
+  # The headers are a dependency for all libraries.
+  # We want to build the other listed dawn components into one big library.
+  build_targets = ["webgpu_headers_gen", "dawn_proc", "dawn_native"]
   depfile_path = args.depfile_path
 
   script_dir = os.path.dirname(os.path.realpath(__file__))
+
   dawn_dir = os.path.join(script_dir, "..", "externals", "dawn")
   build_dir = args.build_dir
 
@@ -132,8 +128,6 @@ def main():
   else:
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=OFF")
     cxx_flags.append("-w") # Silence warnings
-    if is_wasm:
-      cxx_flags.append("--closure=1")
 
   if cxx_flags:
     c_cxx_flags_str = " ".join(cxx_flags)
@@ -193,24 +187,15 @@ def main():
   if os.path.exists(generated_headers_dest):
     shutil.rmtree(generated_headers_dest)
 
-  os.makedirs(generated_headers_dest, exist_ok=True)
-
-  standard_dawn_src = os.path.join(generated_headers_src, "dawn")
-  if os.path.exists(standard_dawn_src):
-    shutil.copytree(standard_dawn_src, os.path.join(generated_headers_dest, "dawn"), dirs_exist_ok=True)
-
-  if not is_wasm:
-    shutil.copytree(
-        os.path.join(generated_headers_src, "webgpu"),
-        os.path.join(generated_headers_dest, "webgpu"),
-        dirs_exist_ok=True)
-  else:
-    wasm_webgpu_src = os.path.join(build_dir, "gen", "src", "emdawnwebgpu", "include", "webgpu")
-    if os.path.exists(wasm_webgpu_src):
-        shutil.copytree(
-            wasm_webgpu_src,
-            os.path.join(generated_headers_dest, "webgpu"),
-            dirs_exist_ok=True)
+  # Copy the contents of the 'dawn' and 'webgpu' directories into the destination.
+  shutil.copytree(
+    os.path.join(generated_headers_src, "dawn"),
+    os.path.join(generated_headers_dest, "dawn"),
+    dirs_exist_ok=True)
+  shutil.copytree(
+    os.path.join(generated_headers_src, "webgpu"),
+    os.path.join(generated_headers_dest, "webgpu"),
+    dirs_exist_ok=True)
 
   dependencies, object_files = discover_dependencies(build_dir, build_targets)
   write_depfile(output_path, depfile_path, dependencies)
