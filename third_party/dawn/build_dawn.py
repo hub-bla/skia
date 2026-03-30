@@ -126,10 +126,8 @@ def main():
     ld_flags += win_ld
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=ON")
     if args.is_clang and target_cpu == "ARM64":
-        clang_target = "--target=arm64-pc-windows-msvc"
+        clang_target = "--target=arm64-windows"
         cxx_flags.append(clang_target)
-        configure_cmd.append("-DCMAKE_C_COMPILER_TARGET=arm64-pc-windows-msvc")
-        configure_cmd.append("-DCMAKE_CXX_COMPILER_TARGET=arm64-pc-windows-msvc")
   else:
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=OFF")
     cxx_flags.append("-w") # Silence warnings
