@@ -78,11 +78,7 @@ def main():
   gpu_as_extension = common.gpu_as_extension()
   enable_ganesh = common.enable_ganesh()
   enable_graphite = common.enable_graphite()
-  enable_dawn = common.enable_dawn()
-
-  if enable_dawn and not enable_graphite:
-    print("Error: --enable-dawn requires --enable-graphite")
-    return 1
+  enable_graphite_dawn = common.enable_graphite_dawn()
 
   ninja = ninja_path(host)
   is_ios = target in ('ios', 'iosSim')
@@ -116,7 +112,7 @@ def main():
   if is_macos or is_ios or is_tvos:
     if is_macos:
       args += ['skia_use_fonthost_mac=true']
-      if enable_dawn:
+      if enable_graphite_dawn:
         args += ['dawn_enable_metal=true']
     args += ['extra_cflags_cc+=["-frtti"]']
     args += ['skia_use_metal=true']
@@ -139,7 +135,7 @@ def main():
     else:
       args += ['extra_cflags+=["-stdlib=libc++", "-mmacosx-version-min=10.13"]']
   elif target == 'linux':
-    if enable_dawn:
+    if enable_graphite_dawn:
       args += ['dawn_enable_vulkan=true', 'dawn_use_x11=true']
     if machine == 'arm64':
       args += [
@@ -156,7 +152,7 @@ def main():
           'cxx="g++-12"',
       ]
   elif target == 'windows':
-    if enable_dawn:
+    if enable_graphite_dawn:
       args += ['dawn_enable_d3d11=true', 'dawn_enable_d3d12=true']
     args += [
         'skia_use_direct3d=true',
@@ -176,7 +172,7 @@ def main():
   elif target == 'android':
     args += ['ndk="' + ndk + '"']
   elif target == 'wasm':
-    if enable_dawn:
+    if enable_graphite_dawn:
         args += ['skia_use_webgpu=true']
     args += [
         'skia_use_dng_sdk=false',
@@ -203,7 +199,7 @@ def main():
         'skia_use_gl=true',
         'skia_enable_svg=true',
         'skia_use_expat=true',
-        f'extra_cflags+=["-DSK_SUPPORT_GPU=1", "-DSK_GL", "-DSK_DISABLE_LEGACY_SHADERCONTEXT", "-sSUPPORT_LONGJMP=wasm"]',
+        'extra_cflags+=["-DSK_SUPPORT_GPU=1", "-DSK_GL", "-DSK_DISABLE_LEGACY_SHADERCONTEXT", "-sSUPPORT_LONGJMP=wasm"]',
         'extra_cflags_cc+=["-std=c++20"]',
     ]
 
@@ -216,9 +212,9 @@ def main():
     args += ['skia_gpu_as_extension=true']
   if not enable_ganesh:
     args += ['skia_enable_ganesh=false']
-  if enable_graphite:
+  if enable_graphite or enable_graphite_dawn:
     args += ['skia_enable_graphite=true']
-  if enable_dawn:
+  if enable_graphite_dawn:
     args += ['skia_use_dawn=true']
 
   out = os.path.join('out', build_type + '-' + target + '-' + machine)
@@ -231,9 +227,8 @@ def main():
     if enable_ganesh:
       ninja_targets.append('skia_ganesh_ext')
     if enable_graphite:
-      # and target not in ["linux", "wasm", "windows"]):
       ninja_targets.append('skia_graphite_ext')
-    if enable_dawn:
+    if enable_graphite_dawn:
       ninja_targets.append('skia_graphite_dawn_ext')
 
   subprocess.check_call([ninja, '-C', out] + ninja_targets)
