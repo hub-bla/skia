@@ -113,6 +113,9 @@ def main():
   if args.enable_rtti:
     configure_cmd.append("-DDAWN_ENABLE_RTTI=ON")
 
+  if target_os == "Linux":
+      configure_cmd.append("-DDAWN_USE_X11=ON")
+
   cxx_flags = args.cxx_flags or []
   ld_flags = args.ld_flags or []
 
@@ -121,9 +124,10 @@ def main():
     configure_cmd += win_cfgs
     cxx_flags += win_cxx
     ld_flags += win_ld
-
-    # The D3D backend requires the HLSL writer.
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=ON")
+    if args.is_clang and target_cpu == "ARM64":
+        clang_target = "--target=arm64-windows"
+        cxx_flags.append(clang_target)
   else:
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=OFF")
     cxx_flags.append("-w") # Silence warnings
@@ -181,13 +185,13 @@ def main():
 
   # Copy the contents of the 'dawn' and 'webgpu' directories into the destination.
   shutil.copytree(
-      os.path.join(generated_headers_src, "dawn"),
-      os.path.join(generated_headers_dest, "dawn"),
-      dirs_exist_ok=True)
+    os.path.join(generated_headers_src, "dawn"),
+    os.path.join(generated_headers_dest, "dawn"),
+    dirs_exist_ok=True)
   shutil.copytree(
-      os.path.join(generated_headers_src, "webgpu"),
-      os.path.join(generated_headers_dest, "webgpu"),
-      dirs_exist_ok=True)
+    os.path.join(generated_headers_src, "webgpu"),
+    os.path.join(generated_headers_dest, "webgpu"),
+    dirs_exist_ok=True)
 
   dependencies, object_files = discover_dependencies(build_dir, build_targets)
   write_depfile(output_path, depfile_path, dependencies)

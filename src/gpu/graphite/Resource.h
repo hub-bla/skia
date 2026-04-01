@@ -319,7 +319,11 @@ protected:
 
     // Needs to be protected for DawnBuffer's emscripten prepareForReturnToCache
     void setDeleteASAP() { fDeleteASAP = DeleteASAP::kYes; }
-
+    bool isPurgeable() const {
+        // This is only called by the ResourceCache on its thread; if the usage and CB ref counts
+        // are 0, the ResourceCache is the only way in which they can become non-zero again.
+        return (fRefs.load(std::memory_order_acquire) & PurgeableMask()) == 0;
+    }
 private:
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // The following set of functions are only meant to be called by the [Global|Proxy]Cache. We
@@ -469,12 +473,6 @@ private:
         uint64_t origRefs = fRefs.load(std::memory_order_acquire) & ~RefMask(RefType::kReturnQueue);
         bool isReusable = (origRefs & fReusableRefMask) == 0;
         return fShareable == Shareable::kScratch || (fShareable == Shareable::kNo && isReusable);
-    }
-
-    bool isPurgeable() const {
-        // This is only called by the ResourceCache on its thread; if the usage and CB ref counts
-        // are 0, the ResourceCache is the only way in which they can become non-zero again.
-        return (fRefs.load(std::memory_order_acquire) & PurgeableMask()) == 0;
     }
 
     bool isUniquelyHeld() const {

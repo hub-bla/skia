@@ -241,6 +241,9 @@ def get_cmake_os_cpu(os, cpu):
     }
     return "Windows", target_cpu_map[cpu]
 
+  if os == "wasm":
+    return "wasm", "wasm"
+
   print("Unsupported OS")
   sys.exit(1)
 
@@ -262,10 +265,10 @@ def get_windows_settings(args):
 
   # Explicitly tell CMake where to find the Resource Compiler, Manifest Tool, and Archiver.
   rc_exe_path = os.path.join(args.win_sdk, "bin", args.win_sdk_version,
-                             args.target_cpu, "rc.exe")
+                             "x64", "rc.exe")
   win_cfgs.append(f"-DCMAKE_RC_COMPILER={rc_exe_path.replace(os.sep, '/')}")
   mt_exe_path = os.path.join(args.win_sdk, "bin", args.win_sdk_version,
-                             args.target_cpu, "mt.exe")
+                             "x64", "mt.exe")
   win_cfgs.append(f"-DCMAKE_MT={mt_exe_path.replace(os.sep, '/')}")
 
   ar_exe_path = os.path.join(args.win_vc, "Tools", "MSVC",
@@ -403,7 +406,6 @@ def get_third_party_locations():
     "-DTINT_BUILD_BENCHMARKS=OFF",
     "-DTINT_BUILD_IR_BINARY=OFF",
     "-DTINT_BUILD_TESTS=OFF",
-    "-DDAWN_USE_X11=OFF",
 
     # Explicitly mark third_party deps as not here to make debugging easier
     "-DDAWN_EMDAWNWEBGPU_DIR=NOT_SYNCED_BY_SKIA",
