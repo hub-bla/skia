@@ -113,6 +113,9 @@ def main():
   if args.enable_rtti:
     configure_cmd.append("-DDAWN_ENABLE_RTTI=ON")
 
+  if target_os == "Linux":
+    configure_cmd.append("-DDAWN_USE_X11=ON")
+
   cxx_flags = args.cxx_flags or []
   ld_flags = args.ld_flags or []
 
@@ -124,6 +127,9 @@ def main():
 
     # The D3D backend requires the HLSL writer.
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=ON")
+    if args.is_clang and target_cpu == "ARM64":
+        clang_target = "--target=arm64-windows"
+        cxx_flags.append(clang_target)
   else:
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=OFF")
     cxx_flags.append("-w") # Silence warnings
