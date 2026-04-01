@@ -170,7 +170,9 @@ def main():
           'is_trivial_abi=false',
       ]
   elif target == 'android':
-    args += ['ndk="' + ndk + '"']
+      if enable_graphite_dawn:
+          args += ['dawn_enable_vulkan=true']
+      args += [f'ndk="{ndk}"']
   elif target == 'wasm':
     if enable_graphite_dawn:
       args += ['skia_use_webgpu=true']

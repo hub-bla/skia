@@ -139,7 +139,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: ./tools/skia_release/prepare_linux.sh
-      - run: python3 tools/skia_release/check_release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --target android --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }}
+      - run: python3 tools/skia_release/check_release.py --skia-dir . --version ${{ needs.prepare.outputs.version }} --target android --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }}  --gpu-as-extension --enable-graphite-dawn
         if: ${{ github.event.inputs.skip_release != 'true' && github.ref == 'refs/heads/skiko' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
