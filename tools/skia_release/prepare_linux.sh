@@ -20,9 +20,9 @@ apt-get install -y \
   libxi-dev
 apt-get update
 
-apt-get install gcc-12 g++-12 -y
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 60 --slave /usr/bin/g++ g++ /usr/bin/g++-12
-update-alternatives --set gcc /usr/bin/gcc-12
+apt-get install gcc-10 g++-10 -y
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 60 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+update-alternatives --set gcc /usr/bin/gcc-10
 
 apt-get install git wget -y
 apt-get install unzip fontconfig libfontconfig1-dev libglu1-mesa-dev curl zip pkg-config -y
