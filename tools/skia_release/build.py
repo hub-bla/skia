@@ -109,6 +109,7 @@ def main():
   ]
 
   if is_macos or is_ios or is_tvos:
+    args += ['extra_cflags+=["-fvisibility=default"]']
     if is_macos:
       args += ['skia_use_fonthost_mac=true']
       if enable_graphite_dawn:
@@ -134,6 +135,7 @@ def main():
     else:
       args += ['extra_cflags+=["-stdlib=libc++", "-mmacosx-version-min=10.13"]']
   elif target == 'linux':
+    args += ['extra_cflags+=["-fvisibility=default"]']
     if enable_graphite:
       args += ['skia_use_vulkan=true']
     if machine == 'arm64':
@@ -168,12 +170,15 @@ def main():
           'clang_win="' + os.path.dirname(os.path.dirname(clang_path)) + '"',
           'is_trivial_abi=false',
       ]
+      args += ['extra_cflags+=["-Xclang", "-fvisibility=default"]']
   elif target == 'android':
     args += [
         'ndk="' + ndk + '"',
         'skia_use_vulkan=true',
     ]
+    args += ['extra_cflags+=["-fvisibility=default"]']
   elif target == 'wasm':
+    args += ['extra_cflags+=["-fvisibility=default"]']
     if enable_graphite_dawn:
       args += ['skia_use_webgpu=true']
     args += [
