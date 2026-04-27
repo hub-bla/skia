@@ -29,10 +29,6 @@ def main():
   globs = [
       out_bin + '/gen/third_party/dawn/include/**/*',
       out_bin + '/*.a',
-      out_bin + '/*.dylib',
-      out_bin + '/*.dll',
-      out_bin + '/*.lib',
-      out_bin + '/*.so',
       out_bin + '/*.a.wasm', # TODO: temporary for m147, in the next release, change it to '.wasm.a'
       out_bin + '/*.lib',
       out_bin + '/icudtl.dat',

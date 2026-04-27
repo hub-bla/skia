@@ -90,7 +90,7 @@ def main():
   if build_type == 'Debug':
     args = ['is_debug=true']
   else:
-    args = ['is_official_build=true', 'is_component_build=true']
+    args = ['is_official_build=true']
 
   args += [
       'target_cpu="' + machine + '"',
