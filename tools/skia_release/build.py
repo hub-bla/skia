@@ -189,6 +189,8 @@ def main():
         'skia_use_libpng_encode=true',
         'skia_use_libwebp_decode=true',
         'skia_use_libwebp_encode=true',
+        'skia_use_freetype=true',
+        'skia_use_freetype_woff2=true',
         'skia_use_wuffs=true',
         'skia_use_lua=false',
         'skia_use_webgl=true',
