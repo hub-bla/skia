@@ -6,6 +6,7 @@
 import("../../gn/skia.gni")
 
 skia_component("jsonreader") {
+  complete_static_lib = false
   import("jsonreader.gni")
   sources = skia_jsonreader_sources
   deps = [ "../..:skia" ]
