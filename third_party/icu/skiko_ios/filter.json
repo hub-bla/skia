@@ -1,0 +1,87 @@
+{
+// Keep the same language compatibility baseline as ICU's iOS filter. The
+// Skiko-specific exclusions below remove unused services, not locales.
+  "collationUCAData": "implicithan",
+  "localeFilter": {
+    "filterType": "language",
+    "includelist": [
+      "root",
+      "af", "ak", "am", "an", "ar", "ast", "az", "be", "bem", "bg",
+      "bn", "br", "bs", "ca", "ckb", "cs", "cy", "da", "de", "ee",
+      "el", "en", "eo", "es", "et", "eu", "fa", "fi", "fil", "fo",
+      "fr", "ga", "gl", "gu", "ha", "haw", "he", "hi", "hr", "hu",
+      "hy", "id", "ig", "in", "is", "it", "iw", "ja", "ka", "kk",
+      "km", "kn", "ko", "ku", "ky", "lg", "ln", "lo", "lt", "lv",
+      "mfe", "mg", "mk", "ml", "mn", "mo", "mr", "ms", "mt", "my",
+      "nb", "ne", "nl", "nn", "no", "nyn", "om", "or", "pa", "pl",
+      "ps", "pt", "rm", "rn", "ro", "ru", "rw", "sh", "si", "sk",
+      "sl", "sn", "so", "sq", "sr", "sv", "sw", "ta", "te", "tg",
+      "th", "ti", "tl", "to", "tr", "uk", "ur", "uz", "vi", "wa",
+      "yo", "zh", "zu"
+    ]
+  },
+  "featureFilters": {
+    "brkitr_dictionaries": {
+      "excludelist": [ "cjdict" ]
+    },
+    "brkitr_rules": {
+      "excludelist": [
+        "line_phrase_cj",
+        "line_normal_phrase_cj",
+        "line_loose_phrase_cj",
+        "line_cj",
+        "title",
+        "word_POSIX"
+      ]
+    },
+    "brkitr_tree": {
+      "excludelist": [ "en_US_POSIX" ]
+    },
+    "conversion_mappings": { "filterType": "exclude" },
+    "coll_tree": { "filterType": "exclude" },
+    "coll_ucadata": { "filterType": "exclude" },
+    "confusables": { "filterType": "exclude" },
+    "curr_tree": { "filterType": "exclude" },
+    "lang_tree": { "filterType": "exclude" },
+    "locales_tree": { "filterType": "exclude" },
+    "rbnf_tree": { "filterType": "exclude" },
+    "rbnf_index": { "filterType": "exclude" },
+    "region_tree": { "filterType": "exclude" },
+    "stringprep": { "filterType": "exclude" },
+    "translit": { "filterType": "exclude" },
+    "unames": { "filterType": "exclude" },
+    "unit_tree": { "filterType": "exclude" },
+    "zone_tree": { "filterType": "exclude" }
+  },
+  "resourceFilters": [
+    {
+      "categories": [ "misc" ],
+      "files": { "includelist": [ "grammaticalFeatures" ] },
+      "rules": [
+        "-/*",
+        "+/grammaticalData/derivations/*/compound/gender/per"
+      ]
+    },
+    {
+      "categories": [ "misc" ],
+      "files": { "includelist": [ "supplementalData" ] },
+      "rules": [
+        "-/*",
+        "+/calendarData",
+        "+/calendarPreferenceData",
+        "+/cldrVersion",
+        "+/codeMappings",
+        "+/idValidity",
+        "+/measurementData",
+        "+/territoryContainment",
+        "+/timeData",
+        "+/weekData",
+        "+/weekData%variant"
+      ]
+    },
+    {
+      "categories": [ "brkitr_tree" ],
+      "rules": [ "-/Version" ]
+    }
+  ]
+}

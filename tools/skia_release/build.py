@@ -103,6 +103,7 @@ def main():
       'skia_use_system_harfbuzz=false',
       'skia_pdf_subset_harfbuzz=true',
       'skia_use_system_icu=false',
+      'skia_icu_data_filter="//third_party/icu/skiko_ios/filter.json"',
       'skia_enable_skottie=true',
       'extra_cflags=[]',
       'extra_cflags_cc=[]',
