@@ -105,6 +105,10 @@ declare_args() {
   # When true, gpu_shared stays in libskia.a while Ganesh and Graphite are
   # emitted as separate extension libraries.
   skia_gpu_as_extension = false
+
+  # When true, PDF sources are emitted as a separate extension library.
+  skia_pdf_as_extension = false
+
   skia_use_zlib = true
 
   if (is_ios) {

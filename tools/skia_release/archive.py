@@ -56,6 +56,7 @@ def main():
       'src/base/*.h',
       'src/core/*.h',
       'src/gpu/ganesh/gl/*.h',
+      'src/pdf/*.h',
       'src/utils/*.h',
       'third_party/externals/angle2/LICENSE',
       'third_party/externals/angle2/include/**/*',

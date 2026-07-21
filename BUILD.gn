@@ -1518,6 +1518,37 @@ optional("pdf_jpeg_helpers") {
   public = skia_pdf_jpeg_public
 }
 
+if (skia_enable_pdf && skia_pdf_as_extension) {
+  skia_static_library("skia_pdf_ext") {
+    check_includes = false
+    configs = skia_library_configs
+    public_configs = [ ":pdf_public" ]
+    configs += [ ":pdf_public" ]
+
+    deps = [
+      ":clipstack_utils",
+      ":pathops",
+      "//third_party/zlib",
+    ]
+    public = skia_pdf_public
+    sources = skia_pdf_sources
+
+    if (skia_pdf_subset_harfbuzz) {
+      deps += [ "//third_party/harfbuzz" ]
+      defines = [ "SK_PDF_USE_HARFBUZZ_SUBSET" ]
+    }
+
+    if (skia_use_zlib && skia_enable_pdf && skia_use_libjpeg_turbo_decode &&
+        skia_use_libjpeg_turbo_encode) {
+      sources += skia_pdf_jpeg_public
+      deps += [
+        ":jpeg_decode",
+        ":jpeg_encode",
+      ]
+    }
+  }
+}
+
 optional("xps") {
   enabled = skia_use_xps && is_win
   public_defines = [ "SK_SUPPORT_XPS" ]
@@ -2157,14 +2188,19 @@ skia_component("skia") {
     ":fontmgr_win",
     ":fontmgr_win_gdi",
     ":jpeg_encode",
-    ":pdf",
-    ":pdf_jpeg_helpers",
     ":png_decode_common",
     ":png_decode_libpng",
     ":png_encode_libpng",
     ":webp_encode",
     ":xps",
   ]
+
+  if (!skia_pdf_as_extension) {
+    public_deps += [
+      ":pdf",
+      ":pdf_jpeg_helpers",
+    ]
+  }
 
   if (skia_gpu_as_extension) {
     public_deps += [ ":gpu_shared" ]

@@ -16,6 +16,7 @@ def create_parser(version_required=False):
   parser.add_argument('--enable-graphite', action=argparse.BooleanOptionalAction, default=False)
   parser.add_argument('--enable-graphite-dawn', action=argparse.BooleanOptionalAction, default=False)
   parser.add_argument('--gpu-as-extension', action=argparse.BooleanOptionalAction, default=False)
+  parser.add_argument('--pdf-as-extension', action=argparse.BooleanOptionalAction, default=False)
   parser.add_argument('--version', required=version_required)
   parser.add_argument('--classifier')
   parser.add_argument('--host')
@@ -159,6 +160,12 @@ def gpu_as_extension():
   parser = create_parser()
   (args, _) = parser.parse_known_args()
   return args.gpu_as_extension
+
+
+def pdf_as_extension():
+  parser = create_parser()
+  (args, _) = parser.parse_known_args()
+  return args.pdf_as_extension
 
 
 def classifier():

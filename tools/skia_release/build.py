@@ -76,6 +76,7 @@ def main():
   target = common.target()
   ndk = common.ndk()
   gpu_as_extension = common.gpu_as_extension()
+  pdf_as_extension = common.pdf_as_extension()
   enable_ganesh = common.enable_ganesh()
   enable_graphite = common.enable_graphite()
   enable_graphite_dawn = common.enable_graphite_dawn()
@@ -213,6 +214,8 @@ def main():
 
   if gpu_as_extension:
     args += ['skia_gpu_as_extension=true']
+  if pdf_as_extension:
+    args += ['skia_pdf_as_extension=true']
   if not enable_ganesh:
     args += ['skia_enable_ganesh=false']
   if enable_graphite or enable_graphite_dawn:
@@ -232,6 +235,8 @@ def main():
         ninja_targets.append('skia_graphite_ext')
     if enable_graphite_dawn:
         ninja_targets.append('skia_graphite_dawn_ext')
+  if pdf_as_extension:
+    ninja_targets.append('skia_pdf_ext')
 
   subprocess.check_call([ninja, '-C', out] + ninja_targets)
   return 0
