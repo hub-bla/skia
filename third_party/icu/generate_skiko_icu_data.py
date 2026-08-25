@@ -58,7 +58,7 @@ def main():
     configure_platform = {
         "Darwin": "MacOSX",
         "Linux": "Linux/gcc",
-        "Windows": "MSYS/MSVC",
+        "Windows": "MinGW",
     }.get(host_system)
     if configure_platform is None:
         raise SystemExit(
@@ -101,29 +101,26 @@ def main():
 
     env = os.environ.copy()
     env["ICU_DATA_FILTER_FILE"] = shell_path(filter_file)
+    configure_args = []
     if host_system == "Windows":
-        # MSYS also has a link.exe, but ICU needs the Microsoft linker.
-        msvc_bin = Path(shutil.which("cl.exe")).parent
-        env["PATH"] = str(msvc_bin) + os.pathsep + env["PATH"]
-
-        # Autoconf uses Unix's `-o` when linking its test programs. MSVC
-        # interprets that as an optimization flag, so the tests cannot find
-        # the executables they just built. Use MSVC's output flag instead.
-        configure_script = configure.parent / "configure"
-        configure_bytes = configure_script.read_bytes()
-        for compiler in ("CC", "CXX"):
-            old = f"${compiler} -o conftest$ac_exeext".encode()
-            if old not in configure_bytes:
-                raise SystemExit(
-                    f"Missing {compiler} link command in {configure_script}"
-                )
-            configure_bytes = configure_bytes.replace(
-                old, f"${compiler} -Feconftest$ac_exeext".encode()
-            )
-        configure_script.write_bytes(configure_bytes)
+        msys_root = Path(bash).parents[2]
+        clang_bin = msys_root / "clang64" / "bin"
+        env["CC"] = shell_path(clang_bin / "clang.exe")
+        env["CXX"] = shell_path(clang_bin / "clang++.exe")
+        env["PATH"] = str(clang_bin) + os.pathsep + env["PATH"]
+        # ICU source data is UTF-8, while Windows otherwise uses its system
+        # code page when tools such as genrb read it.
+        env["CPPFLAGS"] = (
+            env.get("CPPFLAGS", "") + " -DU_CHARSET_IS_UTF8=1"
+        ).strip()
+        configure_args = [
+            "--build=x86_64-w64-mingw32",
+            "--host=x86_64-w64-mingw32",
+        ]
 
     subprocess.run(
         [bash, shell_path(configure), configure_platform]
+        + configure_args
         + [
             "--disable-tests",
             "--disable-samples",

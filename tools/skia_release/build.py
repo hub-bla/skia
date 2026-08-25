@@ -86,7 +86,6 @@ def main():
   is_ios_sim = target == 'iosSim'
   is_tvos_sim = target == 'tvosSim'
   is_macos = target == 'macos'
-  is_desktop = target in ('macos', 'windows', 'linux')
 
   if build_type == 'Debug':
     args = ['is_debug=true']
