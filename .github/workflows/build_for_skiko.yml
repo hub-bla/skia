@@ -252,6 +252,8 @@ jobs:
           msystem: MSYS
           update: false
           install: >-
+            mingw-w64-clang-x86_64-clang
+            mingw-w64-clang-x86_64-libc++
             make
             patch
           path-type: inherit
