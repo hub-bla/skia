@@ -11,14 +11,63 @@ import subprocess
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKIA_ROOT = SCRIPT_DIR.parent.parent
 ICU_ROOT = SKIA_ROOT / "third_party" / "externals" / "icu"
+WINDOWS_CONFIGURE_PATCH = SCRIPT_DIR / "skiko_windows" / "configure.patch"
 
 
 def shell_path(path):
-    if platform.system() == "Windows":
-        return subprocess.check_output(
-            ["cygpath", "--unix", str(path)], text=True
-        ).strip()
-    return Path(path).as_posix()
+    path = Path(path)
+    if platform.system() != "Windows":
+        return path.as_posix()
+    return f"/{path.drive[0].lower()}{path.as_posix()[2:]}"
+
+
+def bash_command():
+    if platform.system() != "Windows":
+        return "bash"
+
+    git = shutil.which("git.exe") or shutil.which("git")
+    if git:
+        for directory in Path(git).resolve().parents:
+            git_bash = directory / "usr" / "bin" / "bash.exe"
+            if git_bash.is_file():
+                return str(git_bash)
+    raise SystemExit("Git Bash is required to configure ICU on Windows")
+
+
+def msvc_environment():
+    vswhere = Path(os.environ["ProgramFiles(x86)"]) / (
+        "Microsoft Visual Studio/Installer/vswhere.exe"
+    )
+    if not vswhere.is_file():
+        raise SystemExit("Visual Studio's vswhere.exe is required on Windows")
+
+    installation = subprocess.check_output(
+        [
+            str(vswhere),
+            "-latest",
+            "-products",
+            "*",
+            "-requires",
+            "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+            "-property",
+            "installationPath",
+        ],
+        text=True,
+    ).strip()
+    vcvarsall = Path(installation) / "VC/Auxiliary/Build/vcvarsall.bat"
+    if not vcvarsall.is_file():
+        raise SystemExit("Could not find vcvarsall.bat")
+
+    variables = subprocess.check_output(
+        ["cmd.exe", "/d", "/s", "/c", f'call "{vcvarsall}" x64 >nul && set'],
+        text=True,
+    )
+    env = os.environ.copy()
+    for line in variables.splitlines():
+        key, separator, value = line.partition("=")
+        if separator:
+            env[key] = value
+    return env
 
 
 def parse_args():
@@ -41,6 +90,7 @@ def main():
     build_dir = args.build_dir.resolve()
     configure = ICU_ROOT / "source" / "runConfigureICU"
     patch_locale = ICU_ROOT / "cast" / "patch_locale.sh"
+    host_system = platform.system()
 
     if not source_filter.is_file():
         raise SystemExit(f"Missing ICU data filter: {source_filter}")
@@ -50,23 +100,23 @@ def main():
         raise SystemExit(f"Missing pinned ICU checkout at {ICU_ROOT}")
     if args.apply_cast_patch and not patch_locale.is_file():
         raise SystemExit(f"Missing Chromium ICU locale patch at {patch_locale}")
+    if host_system == "Windows" and not WINDOWS_CONFIGURE_PATCH.is_file():
+        raise SystemExit(
+            f"Missing Windows ICU configuration patch: {WINDOWS_CONFIGURE_PATCH}"
+        )
     if build_dir == Path(build_dir.anchor):
         raise SystemExit(f"Refusing to use {build_dir} as the build directory")
 
-    host_system = platform.system()
     configure_platform = {
         "Darwin": "MacOSX",
         "Linux": "Linux/gcc",
-        "Windows": "MinGW",
+        "Windows": "MSYS/MSVC",
     }.get(host_system)
     if configure_platform is None:
         raise SystemExit(
             f"Filtered ICU data generation is not supported on {host_system}"
         )
-
-    # On Windows, use the MSYS Bash that launched the build. A bare `bash`
-    # can resolve to the WSL launcher instead.
-    bash = os.environ.get("SHELL", "bash") if host_system == "Windows" else "bash"
+    bash = bash_command()
 
     shutil.rmtree(build_dir, ignore_errors=True)
     build_dir.mkdir(parents=True)
@@ -75,7 +125,7 @@ def main():
     filter_file = build_dir / "filter.json"
     shutil.copyfile(source_filter, filter_file)
     subprocess.run(
-        ["patch", "--batch", str(filter_file), str(filter_patch)],
+        ["git", "apply", str(filter_patch)],
         cwd=build_dir,
         check=True,
     )
@@ -86,6 +136,12 @@ def main():
     # pinned ICU checkout.
     source_root = build_dir / "icu"
     shutil.copytree(ICU_ROOT / "source", source_root / "source")
+    if host_system == "Windows":
+        subprocess.run(
+            ["git", "apply", str(WINDOWS_CONFIGURE_PATCH)],
+            cwd=source_root / "source",
+            check=True,
+        )
     if args.apply_cast_patch:
         shutil.copytree(ICU_ROOT / "cast", source_root / "cast")
         subprocess.run(
@@ -98,29 +154,14 @@ def main():
     icu_build_dir.mkdir()
     configure = source_root / "source" / "runConfigureICU"
 
-    env = os.environ.copy()
+    env = msvc_environment() if host_system == "Windows" else os.environ.copy()
     env["ICU_DATA_FILTER_FILE"] = shell_path(filter_file)
-    configure_args = []
-    if host_system == "Windows":
-        msys_root = Path(bash).parents[2]
-        clang_bin = msys_root / "clang64" / "bin"
-        env["CC"] = shell_path(clang_bin / "clang.exe")
-        env["CXX"] = shell_path(clang_bin / "clang++.exe")
-        env["PATH"] = str(clang_bin) + os.pathsep + env["PATH"]
-        # ICU source data is UTF-8, while Windows otherwise uses its system
-        # code page when tools such as genrb read it.
-        env["CPPFLAGS"] = (
-            env.get("CPPFLAGS", "") + " -DU_CHARSET_IS_UTF8=1"
-        ).strip()
-        configure_args = [
-            "--build=x86_64-w64-mingw32",
-            "--host=x86_64-w64-mingw32",
-        ]
 
     subprocess.run(
-        [bash, shell_path(configure), configure_platform]
-        + configure_args
-        + [
+        [
+            bash,
+            shell_path(configure),
+            configure_platform,
             "--disable-tests",
             "--disable-samples",
             "--disable-layoutex",
