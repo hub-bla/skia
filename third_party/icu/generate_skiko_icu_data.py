@@ -64,9 +64,34 @@ def main():
             f"Filtered ICU data generation is not supported on {host_system}"
         )
 
-    # On Windows, use the MSYS Bash that launched the build. A bare `bash`
-    # can resolve to the WSL launcher instead.
-    bash = os.environ.get("SHELL", "bash") if host_system == "Windows" else "bash"
+    bash = "bash"
+    make = "make"
+    patch = "patch"
+    msys_root = None
+    if host_system == "Windows":
+        msys_location = os.environ.get("MSYS2_LOCATION")
+        if not msys_location:
+            raise SystemExit(
+                "MSYS2_LOCATION is required to generate ICU data on Windows"
+            )
+        msys_root = Path(msys_location)
+        msys_bin = msys_root / "usr" / "bin"
+        bash = msys_bin / "bash.exe"
+        make = msys_bin / "make.exe"
+        patch = msys_bin / "patch.exe"
+        clang_bin = msys_root / "clang64" / "bin"
+        clang = clang_bin / "clang.exe"
+        clangxx = clang_bin / "clang++.exe"
+        missing_tools = [
+            tool
+            for tool in (bash, make, patch, clang, clangxx)
+            if not tool.is_file()
+        ]
+        if missing_tools:
+            raise SystemExit(
+                "Missing MSYS2 build tools: "
+                + ", ".join(str(tool) for tool in missing_tools)
+            )
 
     shutil.rmtree(build_dir, ignore_errors=True)
     build_dir.mkdir(parents=True)
@@ -75,7 +100,7 @@ def main():
     filter_file = build_dir / "filter.json"
     shutil.copyfile(source_filter, filter_file)
     subprocess.run(
-        ["patch", "--batch", str(filter_file), str(filter_patch)],
+        [patch, "--batch", str(filter_file), str(filter_patch)],
         cwd=build_dir,
         check=True,
     )
@@ -102,11 +127,11 @@ def main():
     env["ICU_DATA_FILTER_FILE"] = shell_path(filter_file)
     configure_args = []
     if host_system == "Windows":
-        msys_root = Path(bash).parents[2]
-        clang_bin = msys_root / "clang64" / "bin"
-        env["CC"] = shell_path(clang_bin / "clang.exe")
-        env["CXX"] = shell_path(clang_bin / "clang++.exe")
-        env["PATH"] = str(clang_bin) + os.pathsep + env["PATH"]
+        env["CC"] = shell_path(clang)
+        env["CXX"] = shell_path(clangxx)
+        env["PATH"] = os.pathsep.join(
+            (str(clang_bin), str(msys_bin), env["PATH"])
+        )
         # ICU source data is UTF-8, while Windows otherwise uses its system
         # code page when tools such as genrb read it.
         env["CPPFLAGS"] = (
@@ -132,7 +157,7 @@ def main():
         check=True,
     )
     subprocess.run(
-        ["make", "-j", str(os.cpu_count() or 1)],
+        [make, "-j", str(os.cpu_count() or 1)],
         cwd=icu_build_dir,
         env=env,
         check=True,
