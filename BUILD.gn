@@ -2299,6 +2299,10 @@ skia_source_set("core") {
 }
 
 skia_component("skia") {
+  if (skia_isolate_static_libs) {
+    # Collect core source sets while leaving complete module archives separate.
+    complete_static_lib = true
+  }
   public_configs = [ ":skia_public" ]
   configs = skia_library_configs
 

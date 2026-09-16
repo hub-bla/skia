@@ -104,6 +104,7 @@ def main():
       'skia_pdf_subset_harfbuzz=true',
       'skia_use_system_icu=false',
       'skia_enable_skottie=true',
+      'skia_isolate_static_libs=true',
       'extra_cflags=[]',
       'extra_cflags_cc=[]',
   ]

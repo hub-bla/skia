@@ -104,6 +104,9 @@ if (skia_use_system_libjpeg_turbo) {
                     ]
 
   static_library("libjpeg16") {
+    if (skia_isolate_static_libs) {
+      complete_static_lib = true
+    }
     sources = libjpeg16_sources
 
     defines = [
@@ -116,6 +119,9 @@ if (skia_use_system_libjpeg_turbo) {
   }
 
   static_library("libjpeg12") {
+    if (skia_isolate_static_libs) {
+      complete_static_lib = true
+    }
     sources = libjpeg12_sources
 
     defines = [

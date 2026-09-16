@@ -10,6 +10,8 @@ is_skia_standalone = true
 declare_args() {
   is_official_build = false
   is_component_build = false
+  # Keep Skiko's separately linked static archives out of their dependents.
+  skia_isolate_static_libs = false
   use_libfuzzer = false
   ndk = ""
 
@@ -232,7 +234,7 @@ set_defaults("shared_library") {
 set_defaults("component") {
   configs = default_configs
   if (!is_component_build) {
-    complete_static_lib = true
+    complete_static_lib = !skia_isolate_static_libs
   }
 }
 

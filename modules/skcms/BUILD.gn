@@ -81,6 +81,9 @@ arch("skcms_TransformSkx") {
 }
 
 static_library("skcms") {
+  if (skia_isolate_static_libs) {
+    complete_static_lib = true
+  }
   cflags = []
   if (!is_win || is_clang) {
     cflags += [ "-std=c11" ]

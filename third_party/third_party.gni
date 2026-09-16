@@ -67,6 +67,11 @@ template("third_party") {
 
   target(_mode, target_name) {
     if (enabled) {
+      if (skia_isolate_static_libs && _mode == "static_library") {
+        # Keep third-party archives as separate link inputs even when a
+        # dependent (such as :skia) is a complete static library.
+        complete_static_lib = true
+      }
       # set_defaults(_mode) might not exist or set configs
       if (!defined(configs)) {
         configs = []
