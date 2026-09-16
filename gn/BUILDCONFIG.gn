@@ -231,9 +231,7 @@ set_defaults("shared_library") {
 
 set_defaults("component") {
   configs = default_configs
-  if (!is_component_build) {
-    complete_static_lib = true
-  }
+  complete_static_lib = false
 }
 
 skia_target_default_configs = []
