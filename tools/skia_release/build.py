@@ -272,6 +272,12 @@ def main():
         ninja_targets.append('skia_graphite_dawn_ext')
 
   subprocess.check_call([ninja, '-C', out] + ninja_targets)
+  if is_ios or is_tvos:
+    subprocess.check_call([
+        sys.executable,
+        'tools/skia_release/partition_static_archives.py',
+        out,
+    ])
   return 0
 
 
